@@ -6,6 +6,7 @@ roleRef:
   # Add the "namespace-reader" role to the service account
   kind: "Role"
   name: "namespace-reader"
+  apiGroup: "rbac.authorization.k8s.io"
 subjects:
   - kind: "ServiceAccount"
     name: "qs-karaf-camel-rhosak"
