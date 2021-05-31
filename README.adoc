@@ -36,7 +36,9 @@ a service account via CLI].
 
 At this stage you should have the following credentials: a
 `kafka bootstrap URL`, a `service account id` and a
-`service account secret`.
+`service account secret`. You may also want to take note of the
+`Token endpoint URL` if you choose to use ``SASL/OAUTHBEARER`` instead
+of ``SASL/PLAIN`` authentication method.
 
 === Karaf
 
@@ -71,6 +73,7 @@ kafka.port=<FILL_ME>
 # Service Account info
 sa.client.id=<FILL_ME>
 sa.client.secret=<FILL_ME>
+sa.token.endpoint.uri=<FILL_ME>
 ----
 
 ==== Running the example on Red Hat Fuse Standalone
