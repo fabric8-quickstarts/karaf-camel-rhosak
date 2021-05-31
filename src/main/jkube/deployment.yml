@@ -1,0 +1,18 @@
+spec:
+  replicas: 1
+  template:
+    spec:
+      serviceAccountName: "qs-karaf-camel-rhosak"
+      containers:
+        -
+          resources:
+            requests:
+              cpu: "0.2"
+              memory: 128Mi
+            limits:
+              cpu: "1.0"
+              memory: 512Mi
+          env:
+            - name: JAVA_OPTIONS
+              value: -Dfabric8.config.plugin.enabled=true
+

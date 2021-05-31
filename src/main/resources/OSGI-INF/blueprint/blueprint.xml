@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<!--
+    JBoss, Home of Professional Open Source
+    Copyright 2014, Red Hat, Inc. and/or its affiliates, and individual
+    contributors by the @authors tag. See the copyright.txt in the
+    distribution for a full listing of individual contributors.
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<!--
+   This is the OSGi Blueprint XML file defining the Camel context and routes.  Because the file is in the
+   OSGI-INF/blueprint directory inside our JAR, it will be automatically activated as soon as the bundle is installed.
+   The root element for any OSGi Blueprint file is 'blueprint' - you also see the namespace definitions for both the Blueprint
+   and the Camel namespaces.
+-->
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+		   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		   xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+		xsi:schemaLocation="
+             http://www.osgi.org/xmlns/blueprint/v1.0.0 https://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+             http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
+
+	<cm:property-placeholder persistent-id="camel.karaf.rhosak" update-strategy="reload">
+		<cm:default-properties>
+			<cm:property name="kafka.host"               value="localhost" />
+			<cm:property name="kafka.port"               value="443" />
+			<cm:property name="sa.client.id"             value="XXXX"/>
+			<cm:property name="sa.client.secret"         value="XXXX"/>
+			<cm:property name="sa.token.endpoint.uri"    value="https://identity.api.openshift.com/auth/realms/rhoas/protocol/openid-connect/token"/>
+			<cm:property name="topic.name"               value="test" />
+			<cm:property name="consumer.group"           value="kafkaGroup" />
+			<cm:property name="consumer.maxPollRecords"  value="5000" />
+			<cm:property name="consumer.consumersCount"  value="1"/>
+			<cm:property name="consumer.seekTo"          value="beginning"/>
+			<cm:property name="kafka.securityProtocol"   value="SASL_SSL"/>
+			<cm:property name="kafka.saslMechanism"      value="PLAIN"/>
+			<cm:property name="kafka.saslJaasConfig"     value="org.apache.kafka.common.security.plain.PlainLoginModule required username='${client.id}' password='${client.secret}';"/>
+		</cm:default-properties>
+	</cm:property-placeholder>
+
+
+	<camelContext xmlns="http://camel.apache.org/schema/blueprint" id="qs-karaf-camel-rhosak">
+
+		<route id="kafka-consumer">
+			<from uri="kafka:{{topic.name}}?maxPollRecords={{consumer.maxPollRecords}}
+				&amp;consumersCount={{consumer.consumersCount}}
+				&amp;seekTo={{consumer.seekTo}}
+				&amp;groupId={{consumer.group}}"/>
+			<log message="${body}"/>
+		</route>
+
+		<route id="kafka-producer">
+			<from uri="timer://foo?fixedRate=true&amp;period=5000"/>
+			<setBody>
+				<simple>Greetings at fixed rate</simple>
+			</setBody>
+			<to uri="kafka:{{topic.name}}"/>
+		</route>
+
+	</camelContext>
+
+	<bean id="kafka" class="org.apache.camel.component.kafka.KafkaComponent">
+		<property name="configuration" ref="kafkaConf"/>
+	</bean>
+
+	<bean id="kafkaConf" class="org.apache.camel.component.kafka.KafkaConfiguration">
+		<property name="brokers" value="${kafka.host}:${kafka.port}"/>
+		<property name="saslMechanism" value="${kafka.saslMechanism}"/>
+		<property name="securityProtocol" value="${kafka.securityProtocol}"/>
+		<property name="saslJaasConfig" value="${kafka.saslJaasConfig}"/>
+		<!-- RHOSAK exposes a TLS 1.3 endpoint, we must use that protocol-->
+		<property name="sslEnabledProtocols" value="TLSv1.2,TLSv1.3"/>
+		<property name="sslProtocol" value="TLSv1.3"/>
+	</bean>
+
+	<bean id="defaultShutdownStrategy"  class="org.apache.camel.impl.DefaultShutdownStrategy">
+		<property name="timeout" value="10"/>
+		<property name="suppressLoggingOnTimeout" value="true"/>
+		<property name="shutdownNowOnTimeout" value="true"/>
+	</bean>
+
+</blueprint>

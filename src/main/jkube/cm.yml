@@ -1,0 +1,6 @@
+metadata:
+  name: ${project.artifactId}
+  labels:
+    karaf.pid: camel.karaf.rhosak
+  annotations:
+    maven.jkube.io/cm/camel.karaf.rhosak.cfg: ${project.basedir}/src/main/resources/camel.karaf.rhosak.cfg
