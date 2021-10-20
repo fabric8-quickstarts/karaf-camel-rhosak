@@ -238,7 +238,7 @@
                                         </property>
                                         <property>
                                             <name>rht.comp</name>
-                                            <value>karaf-camel-amq</value>
+                                            <value>karaf-camel-rhosak</value>
                                         </property>
                                         <property>
                                             <name>rht.comp_ver</name>
