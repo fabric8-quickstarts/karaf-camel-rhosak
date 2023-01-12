@@ -27,7 +27,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- configure the versions you want to use here -->
-        <fuse.bom.version>7.9.0.fuse-sb2-790050-redhat-00001</fuse.bom.version>
+        <fuse.bom.version>7.11.1.fuse-sb2-7_11_1-00017</fuse.bom.version>
         <docker.image.version>1.11</docker.image.version>
 
         <!-- maven plugin versions -->
@@ -234,7 +234,7 @@
                                         </property>
                                         <property>
                                             <name>rht.prod_ver</name>
-                                            <value>7.11</value>
+                                            <value>7.12</value>
                                         </property>
                                         <property>
                                             <name>rht.comp</name>
